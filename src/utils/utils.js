@@ -1,5 +1,7 @@
 import { POINTS_THRESHOLD_1, POINTS_THRESHOLD_2 } from './constants.js';
 
+export const formatter = new Intl.DateTimeFormat('eng', { month: 'long' });
+
 export const calculatePoints = (amount) => {
   if (!amount) {
 	return 0
@@ -13,49 +15,43 @@ export const calculatePoints = (amount) => {
   return 0
 };
 
+export  const normalizeMonth = (month) => formatter.format(new Date(2001, month, 1));
+
 export const calculateRewardPoints = (transactions) => {
   if (!transactions) {
 	return {}
   }
   const monthlyPoints = {};
-  const totalPoints = {};
   
-  // Get the date three months ago from the current date
-  const threeMonthsAgo = new Date();
-  threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+  const today = new Date();
+  const threeMonthsAgo = new Date(today.setMonth(today.getMonth() - 3));
   
   transactions.forEach((transaction) => {
 	const { customerId, amount, date } = transaction;
 	const transactionDate = new Date(date);
 	
-	// Check if the transaction is within the last three months
 	if (transactionDate >= threeMonthsAgo) {
-	  const transactionMonth = transactionDate.getMonth() + 1; // Months are zero-indexed
-	  
-	  // Calculate points for the transaction
+	  const transactionMonth = transactionDate.getMonth();
 	  const points = calculatePoints(amount);
 	  
-	  // Update monthly points for the customer
 	  if (!monthlyPoints[customerId]) {
 		monthlyPoints[customerId] = {};
 	  }
 	  
-	  if (!monthlyPoints[customerId][transactionMonth]) {
-		monthlyPoints[customerId][transactionMonth] = 0;
+	  const monthName = normalizeMonth(transactionMonth);
+	  if (!monthlyPoints[customerId][monthName]) {
+		monthlyPoints[customerId][monthName] = 0;
 	  }
 	  
-	  monthlyPoints[customerId][transactionMonth] += points;
+	  monthlyPoints[customerId][monthName] += points;
 	  
-	  // Update total points for the customer
-	  if (!totalPoints[customerId]) {
-		totalPoints[customerId] = 0;
+	  if (!monthlyPoints[customerId].totalPoints) {
+		monthlyPoints[customerId].totalPoints = 0;
 	  }
 	  
-	  totalPoints[customerId] += points;
+	  monthlyPoints[customerId].totalPoints += points;
 	}
   });
   
-  return { monthlyPoints, totalPoints };
+  return monthlyPoints;
 };
-
-

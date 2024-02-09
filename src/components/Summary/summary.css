@@ -1,0 +1,9 @@
+.summary {
+display: flex;
+    width: 500px;
+    flex-direction: column;
+}
+.statistics {
+    display: flex;
+    gap: 1rem;
+}

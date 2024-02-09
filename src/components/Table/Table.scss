@@ -1,0 +1,22 @@
+
+.table {
+  &__container {
+    border-collapse: collapse;
+    width: 100%;
+    border: 1px solid #ddd;
+    font-size: 12px;
+
+    th, td {
+      text-align: left;
+      padding: 12px;
+    }
+
+    tr {
+      border-bottom: 1px solid #ddd;
+
+      .header, &:hover {
+        background-color: #3a3a3a
+      }
+    }
+  }
+}
